@@ -1,0 +1,8 @@
+# {"success", 1},
+# {"error", 2},
+# {"network", 3},
+# {"config", 4},
+# {"reconcile", 5},
+"No such host is known": "network"
+"Reconcile Failed": "reconcile"
+"INVALID_LOGIN: Invalid username, password, security token; or user locked out": "config"

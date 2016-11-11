@@ -1,0 +1,13 @@
+---
+  # app:
+  #   basePath: "C:/Projects/go/src/github.com/Beryl8Plus/be8-sfdc-integration/"
+  log: 
+    outputType: "File"
+    level: "DebugLevel"
+    logPath: "log/{yyyy}{MM}{dd}/"
+    logNameFormat: "test_{hh}{mm}.txt"
+  # proxy: 
+  #   ip: "10.252.252.25"
+  #   port: "8080"
+  #   user: "usrsful"
+  #   password: "SFP@ssw0rd"

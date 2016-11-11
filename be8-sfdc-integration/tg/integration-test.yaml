@@ -1,0 +1,29 @@
+  - 
+    cmdName: "ImportScript"
+    importScript: "tg/login.yaml"
+    parseParameter: {}
+  - 
+    cmdName: "FileToRecordSet"
+    srcFile: 
+      path: "C:/BE8-integration-program/Integration Data/"
+      extension: "Passenger_20160905_20160906.csv"
+      contains: ".csv"
+    recordSetsName: "PassengerRecordSet"
+    delimiter: ","
+    encoding: "UTF-8"
+    onEndMsg: "Complete RecordSetToFile"
+  - 
+    cmdName: "BulkRecordSet"
+    batchSize: "5000"
+    recordsetsName: "PassengerRecordSet"
+    operation: "insert"
+    sobject: "Passenger__c"
+    # externalId: "Pricebook_Entry_External_ID__c"
+    headerMappedFile: "tg/passenger-mapping.sdl"
+    saveBulkJobInfoTo: "PassengerBulkJob"
+    onEndMsg: "Complete BulkRecordSet"
+  - 
+    cmdName: "AwaitBulkCompletion"
+    getBulkJobInfoFrom: "PassengerBulkJob"
+    onEndMsg: "Complete AwaitBulkCompletion"
+

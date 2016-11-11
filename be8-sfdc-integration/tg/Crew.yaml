@@ -1,0 +1,56 @@
+  - 
+    cmdName: "ImportScript"
+    importScript: "tg/login.yaml"
+    parseParameter: {}
+  - 
+    cmdName: "FileToRecordSet"
+    srcFile: 
+      path: "C:/Users/Gas/Desktop/System_Integrate/Crew/"
+      extension: "SALESFORCE_CrewList.csv"
+      contains: "SALESFORCE_CrewList.csv"
+    recordSetsName: "CrewRecordSet"
+    delimiter: ","
+    encoding: "UTF-8"
+    onEndMsg: "Complete RecordSetToFile"
+  -
+    cmdName: "ProcessRecordSet"
+    recordSetsName: "CrewRecordSet"
+    commands: 
+      - 
+        TransformToInt: 
+          destColumn: "LegNo"
+          sourceColumn: "Leg Seq"
+      - 
+        TransformConcat: 
+          destColumn: "Name"
+          sourceColumn: "FirstName+ +LastName"
+      - 
+        TransformConcat: 
+          destColumn: "FlightExternalID"
+          sourceColumn: "Flight Number+_+Departure Date+_+LegNo"
+      - 
+        TransformConcat: 
+          destColumn: "CrewExternalID"
+          sourceColumn: "ID+_+FlightExternalID"
+      - 
+        TransformConcat: 
+          destColumn: "Source"
+          sourceColumn: "1"
+  - 
+    cmdName: "BulkRecordSet"
+    batchSize: "8500"
+    recordsetsName: "CrewRecordSet"
+    operation: "insert"
+    sobject: "Crew_List__c"
+    headerMappedFile: "tg/CrewList-mapping.sdl"
+    saveBulkJobInfoTo: "CrewListBulkJob"
+    onEndMsg: "Complete BulkRecordSet for Crew List"
+  - 
+    cmdName: "AwaitBulkCompletion"
+    getBulkJobInfoFrom: "CrewListBulkJob"
+    onEndMsg: "Complete AwaitBulkCompletion for CrewList"
+  -
+    cmdName: "ClearAllGlobalParameter"
+    clearAllParameterExcept:
+      - "Credential"
+    onEndMsg: "WriteFileComplete"

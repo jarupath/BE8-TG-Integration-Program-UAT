@@ -1,0 +1,53 @@
+  - 
+    cmdName: "ImportScript"
+    importScript: "tg/login.yaml"
+    parseParameter: {}
+  - 
+    cmdName: "FileToRecordSet"
+    srcFile: 
+      path: "C:/Users/Gas/Desktop/System_Integrate/Flight/Output/"
+      extension: "FlightSchedule.csv"
+      contains: "FlightSchedule.csv"
+    recordSetsName: "FlightRecordSet"
+    delimiter: ","
+    encoding: "UTF-8"
+    onEndMsg: "Complete RecordSetToFile"
+  -
+    cmdName: "ProcessRecordSet"
+    recordSetsName: "FlightRecordSet"
+    commands: 
+      - 
+        TransformConcat: 
+          destColumn: "FlightNumberWithHeader"
+          sourceColumn: "TG+FlightNo"
+      - 
+        TransformConcat: 
+          destColumn: "ExternalID"
+          sourceColumn: "TG+FlightNo+_+Flightdate UTC+_+Leg Seq"
+      - 
+        TransformConcat: 
+          destColumn: "Source"
+          sourceColumn: "1"
+      - 
+        TransformConcat: 
+          destColumn: "AircraftReg"
+          sourceColumn: "AC Reg"
+  - 
+    cmdName: "BulkRecordSet"
+    batchSize: "5000"
+    recordsetsName: "FlightRecordSet"
+    operation: "upsert"
+    externalId: "Flight_External_ID__c"
+    sobject: "Flight__c"
+    headerMappedFile: "tg/Flight-mapping.sdl"
+    saveBulkJobInfoTo: "FlightBulkJob"
+    onEndMsg: "Complete BulkRecordSet for Flight"
+  - 
+    cmdName: "AwaitBulkCompletion"
+    getBulkJobInfoFrom: "FlightBulkJob"
+    onEndMsg: "Complete AwaitBulkCompletion for Flight"
+  -
+    cmdName: "ClearAllGlobalParameter"
+    clearAllParameterExcept:
+      - "Credential"
+    onEndMsg: "Batch Complete"

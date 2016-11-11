@@ -1,0 +1,61 @@
+  - 
+    cmdName: "ImportScript"
+    importScript: "tg/login.yaml"
+    parseParameter: {}
+  - 
+    cmdName: "FileToRecordSet"
+    srcFile: 
+      path: "C:/Users/Gas/Desktop/System_Integrate/rop/"
+      extension: "ROP_CRM.csv"
+      contains: "ROP_CRM.csv"
+    recordSetsName: "AccountRecordSet"
+    delimiter: ","
+    encoding: "UTF-8"
+    onEndMsg: "Complete RecordSetToFile"
+  -
+    cmdName: "ProcessRecordSet"
+    recordSetsName: "AccountRecordSet"
+    commands: 
+      - 
+        TransformConcat: 
+          destColumn: "Name"
+          sourceColumn: "FIRST_NAME+ +LAST_NAME"
+      - 
+        TransformConcat: 
+          destColumn: "HomePhone"
+          sourceColumn: "Home Phone1: AREA_CODE+Home Phone1: PHONE_NUMBER"
+      - 
+        TransformConcat: 
+          destColumn: "BussinessPhone"
+          sourceColumn: "Bussi Phone1: AREA_CODE+BUssi Phone1: PHONE_NUMBER"
+      - 
+        TransformConcat: 
+          destColumn: "MobilePhone"
+          sourceColumn: "Mobile Phone1: AREA_CODE+Mobile Phone1: PHONE_NUMBER"
+      - 
+        TransformConcat: 
+          destColumn: "FaxPhone"
+          sourceColumn: "Fax: AREA_CODE+Fax: PHONE_NUMBER"
+      - 
+        TransformConcat: 
+          destColumn: "AddressConcat"
+          sourceColumn: "ADDRESS_LINE_1+ +ADDRESS_LINE_2+ +ADDRESS_LINE_3+ +CITY_NAME+ +PROVINCE_STATE+ +COUNTRY_NAME+ +POSTAL_ZIP_CODE"
+        
+  - 
+    cmdName: "BulkRecordSet"
+    batchSize: "5000"
+    recordsetsName: "AccountRecordSet"
+    operation: "insert"
+    sobject: "TempPassenger__c"
+    headerMappedFile: "tg/TempPassenger-mapping.sdl"
+    saveBulkJobInfoTo: "AccountBulkJob"
+    onEndMsg: "Complete BulkRecordSet"
+  - 
+    cmdName: "AwaitBulkCompletion"
+    getBulkJobInfoFrom: "AccountBulkJob"
+    onEndMsg: "Complete AwaitBulkCompletion"
+  -
+    cmdName: "ClearAllGlobalParameter"
+    clearAllParameterExcept:
+      - "Credential"
+    onEndMsg: "WriteFileComplete"
